@@ -1,0 +1,53 @@
+﻿<Window x:Class="DailyReport.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DailyReport"
+        mc:Ignorable="d"
+        Background="#FFE4E4E4"
+        Title="每日進度" Height="550" Width="525">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#B388FF"/>
+            <Setter Property="Foreground" Value="#000000"/>
+            <Setter Property="BorderThickness" Value="0"></Setter>
+        </Style>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="45"/>
+        </Grid.RowDefinitions>
+        
+        <Label Grid.Row="0">主旨</Label>
+        <TextBox Name="tbSubject" Grid.Row="0" Margin="40,0,0,0"/>
+
+        <Label Grid.Row="1">收件</Label>
+        <TextBox Name="tbAddress" Grid.Row="1" Margin="40,0,0,0"/>
+        
+        <Label Grid.Row="2">副本</Label>
+        <TextBox Name="tbCC" Grid.Row="2" Margin="40,0,0,0"/>
+
+        <ScrollViewer Grid.Row="3" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible" Margin="5,0,0,0">
+            <StackPanel Name="editPanel" Margin="0,0,5,0">                
+                <StackPanel Name="reportPanel" Margin="0,3,0,0"/>
+                <Label>　</Label>
+                <Button Name="btnAdder" Click="btnAdder_Click">+</Button>
+                <Label>　</Label>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Button Name="btnMail" Grid.Row="4" Click="btnMail_Click" Margin="5,5,5,0">寄信！</Button>
+        <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="5,5,5,5">            
+            <Button Name="btnSaveDB" Click="btnSaveDB_Click" Width="80">儲存至 DB</Button>
+            <Button Name="btnWeekly" Click="btnWeekly_Click"  Width="80">產生週報</Button>
+            <Button Name="btnMonthly" Click="btnMonthly_Click"  Width="80">產生月報</Button>
+        </StackPanel>        
+    </Grid>
+</Window>
