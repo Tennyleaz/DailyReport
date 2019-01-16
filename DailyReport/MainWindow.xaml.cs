@@ -18,6 +18,8 @@ namespace DailyReport
         private HashSet<string> mantisNumbers = new HashSet<string>();
         private List<CommitReport> wctReports = new List<CommitReport>();
         private List<CommitReport> smReports = new List<CommitReport>();
+        private DateTime sinceDate;
+        //private DateTime untilDate;
 
         public MainWindow()
         {
@@ -28,13 +30,16 @@ namespace DailyReport
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            tbSubject.Text = DateTime.Today.ToString("MM/dd", System.Globalization.CultureInfo.InvariantCulture) + " 進度報告";
-            tbAddress.Text = "";
-            tbCC.Text = "";
+            sinceDatePicker.SelectedDate = DateTime.Today;
+            //tbSubject.Text = DateTime.Today.ToString("MM/dd", System.Globalization.CultureInfo.InvariantCulture) + " 進度報告";
 
-            await LoadWCTCommits();
-            await LoadScannerManagerCommits();
+            //await LoadWCTCommits();
+            //await LoadScannerManagerCommits();
             //await TestDB();
+            
+            //await LoadCommits("WorldCardTeam", @"C:\Workspace\WorldCardTeam\.git");
+            //await LoadCommits("WorldCard Enterprise", @"C:\Workspace\WorldCardEnterprice\.git");
+            //await LoadCommits("Scanner Manager", @"C:\Workspace\ScannerManager\.git");            
         }
 
         /*private async Task TestDB()
@@ -54,6 +59,96 @@ namespace DailyReport
             }
             dbm.Dispose();
         }*/
+
+        public async Task LoadCommits(string projectName, string gitPath, DateTime? sinceDate = null, DateTime? untilDate = null)
+        {
+            List<CommitReport> cReports = new List<CommitReport>();
+            Report report = new Report();
+            string projectVersion = "";
+            Action readAction = () =>
+            {
+                // read today's WCT git commit                
+                try
+                {
+                    List<GitLog> wctLogs;
+                    if (sinceDate != null && untilDate != null)
+                    {                        
+                        string sinceDateString = sinceDate.Value.ToString("yyyy-MM-dd HH:mm");
+                        string untilDateString = untilDate.Value.ToString("yyyy-MM-dd HH:mm");
+                        wctLogs = LoadGitReport(sinceDateString, untilDateString, gitPath);
+                    }
+                    else if (sinceDate != null)
+                    {
+                        string sinceDateString = sinceDate.Value.ToString("yyyy-MM-dd HH:mm");
+                        wctLogs = LoadGitReport(sinceDateString, gitPath);
+                    }
+                    else
+                    {
+                        DateTime yesterday = DateTime.Today.AddDays(-1);
+                        string sinceDateString =
+                            new DateTime(yesterday.Year, yesterday.Month, yesterday.Day, 23, 59, 59)
+                            .ToString("yyyy-MM-dd HH:mm");
+                        wctLogs = LoadGitReport(sinceDateString, gitPath);
+                    }
+                    foreach (GitLog log in wctLogs)
+                    {
+                        CommitReport cr = GitMessageParser.GitMessageParser.ParseReport(log);
+                        if (cr != null)
+                            cReports.Add(cr);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+
+                reports.Add(report);
+
+                if (cReports.Count > 0)
+                {
+                    projectVersion = cReports.First().Version;
+                    foreach (CommitReport cr in cReports)
+                    {
+                        // 移除所有帶mantis的行數
+                        if (HasMantisBug(cr.Header))
+                            cr.Body = FindMantisNumbers(cr.Body);
+
+                        if (cr.Body.Count > 0 || !string.IsNullOrWhiteSpace(cr.Header))
+                        {
+                            for (int i = 0; i < cr.Body.Count; i++)
+                                cr.Body[i] = TrimIndexHeader(cr.Body[i]);
+                            MyProgress myProgress = new MyProgress();
+                            // 去空白
+                            string s = cr.Header + string.Join("", cr.Body);
+                            s = s.TrimStart(' ');
+                            myProgress.MyValue = s;
+                            report.DailyProgresses.Add(myProgress);
+                        }
+                    }
+
+                    if (mantisNumbers.Count > 0)
+                    {
+                        MyProgress myProgress = new MyProgress();
+                        string str = "修正 Mantis 上的問題：";
+                        str += string.Join("、", mantisNumbers);
+                        myProgress.MyValue = str;
+                        report.DailyProgresses.Add(myProgress);
+                        report.MantisList = mantisNumbers;
+                    }
+                }
+            };
+
+            await Task.Run(readAction);
+
+            if (cReports.Count > 0)
+            {
+                ReportControl rc = new ReportControl(report);
+                rc.OnRemoveProject += OnRemoveProjectClicked;
+                reportPanel.Children.Add(rc);
+                report.ProjectName = projectName;
+                report.ProjectVersion = projectVersion;
+            }
+        }
 
         public async Task LoadScannerManagerCommits()
         {
@@ -93,7 +188,7 @@ namespace DailyReport
                         if (HasMantisBug(cr.Header))
                             cr.Body = FindMantisNumbers(cr.Body);
 
-                        if (cr.Body.Count > 0 && !string.IsNullOrWhiteSpace(cr.Header))
+                        if (cr.Body.Count > 0 || !string.IsNullOrWhiteSpace(cr.Header))
                         {
                             for (int i = 0; i < cr.Body.Count; i++)
                                 cr.Body[i] = TrimIndexHeader(cr.Body[i]);
@@ -122,8 +217,6 @@ namespace DailyReport
 
             if (smReports.Count > 0)
             {
-                await Task.Run(readAction);
-
                 ReportControl rc = new ReportControl(report);
                 rc.OnRemoveProject += OnRemoveProjectClicked;
                 reportPanel.Children.Add(rc);
@@ -243,6 +336,28 @@ namespace DailyReport
             string strResult = MailToUtility.SendMailToURI(vAddress, vCC, null, tbSubject.Text, strBody);
             if (!string.IsNullOrEmpty(strResult))
                 MessageBox.Show(strResult);
+        }
+
+        private List<GitLog> LoadGitReport(string dateTimeArgument, string gitPath)
+        {
+            List<GitLog> logs = new List<GitLog>();
+            GitMessageParser.GitMessageParser parser = new GitMessageParser.GitMessageParser(gitPath);
+            if (GitMessageParser.GitMessageParser.IsGitInstalled())
+            {
+                return parser.ReadLogsDirect(dateTimeArgument, "tenny");
+            }
+            return logs;
+        }
+
+        private List<GitLog> LoadGitReport(string dateSinceArgument, string dateUntilArgument,  string gitPath)
+        {
+            List<GitLog> logs = new List<GitLog>();
+            GitMessageParser.GitMessageParser parser = new GitMessageParser.GitMessageParser(gitPath);
+            if (GitMessageParser.GitMessageParser.IsGitInstalled())
+            {
+                return parser.ReadLogsDirect(dateSinceArgument, dateUntilArgument, "tenny");
+            }
+            return logs;
         }
 
         private List<GitLog> LoadScannerManagerGitReport(string dateTimeArgument)
@@ -380,7 +495,7 @@ namespace DailyReport
                     }
                     foreach (string number in report.MantisList)
                     {
-                        Mantis m = new Mantis() { MantisNumber = number, Date = DateTime.Today };
+                        Mantis m = new Mantis() { MantisNumber = number, Date = sinceDate };
                         await dbm.WriteAsync(m);
                     }
                 }
@@ -400,47 +515,54 @@ namespace DailyReport
             await dbm.Init();
             if (dbm.Open())
             {
-                // get daily reports
-                List<DailyReportModel> dList = await dbm.ReadReportAsync(startDay, endDay);
-                // get all project list
-                List<ProjectReport> prList = await dbm.ReadAllProjectsAsync();
-                // filter unused projects
-                HashSet<int> projectIDs = new HashSet<int>(dList.Select(x => x.ProjectId));
-                prList = prList.Where(x => projectIDs.Contains(x.Id)).ToList();
-                // make reprt list
+                var alist = await dbm.ReadPeriodReport(startDay, endDay);
+
+
+                //// get daily reports
+                //List<DailyReportModel> dList = await dbm.ReadReportAsync(startDay, endDay);
+                //// get all project list
+                //List<ProjectReport> prList = await dbm.ReadAllProjectsAsync();
+                //// filter unused projects
+                //HashSet<int> projectIDs = new HashSet<int>(dList.Select(x => x.ProjectId));
+                //prList = prList.Where(x => projectIDs.Contains(x.Id)).ToList();
+                //// make reprt list
                 List<AccumulatedReport> weeklyReport = new List<AccumulatedReport>();
-                foreach (ProjectReport pr in prList)
-                {
-                    AccumulatedReport ar = new AccumulatedReport();
-                    ar.ProjectId = pr.Id;
-                    ar.ProjectName = pr.ProjectName;
-                    ar.ProjectVersion = pr.Version;
-                    weeklyReport.Add(ar);
-                }
+                //foreach (ProjectReport pr in prList)
+                //{
+                //    AccumulatedReport ar = new AccumulatedReport();
+                //    ar.ProjectId = pr.Id;
+                //    ar.ProjectName = pr.ProjectName;
+                //    ar.ProjectVersion = pr.Version;
+                //    weeklyReport.Add(ar);
+                //}
                 // merge weekly report list
                 string pattern = @"^修正 *(M|m)antis *上的問題(：|:)";
                 Regex regex = new Regex(pattern);
-                foreach (DailyReportModel drm in dList)
+                foreach (PeriodReport drm in alist)
                 {
-                    AccumulatedReport ar = weeklyReport.FirstOrDefault(a => a.ProjectId == drm.ProjectId);
-                    if (ar != null)
+                    AccumulatedReport ar = weeklyReport.FirstOrDefault(x => x.ProjectId == drm.ProjectID);
+                    if (ar == null)
                     {
-                        // check if line contains mantis number
-                        var match = regex.Match(drm.Message);
-                        if (match.Success)
-                        {
-                            // add mantis number to project
-                            string mantisLine = drm.Message.Substring(match.Length, drm.Message.Length - match.Length);
-                            string[] mantisItems = mantisLine.Split('、');
-                            foreach (string item in mantisItems)
-                                ar.MantisList.Add(item);
-                        }
-                        else
-                        {
-                            // add message line to corresponding project
-                            ar.ProjectContent.Add(drm.Message);
-                        }
+                        ar = new AccumulatedReport() { ProjectName = drm.ProjectName, ProjectId = drm.ProjectID, ProjectVersion = drm.Version };
+                        weeklyReport.Add(ar);
                     }
+
+                    // check if line contains mantis number
+                    var match = regex.Match(drm.Message);
+                    if (match.Success)
+                    {
+                        // add mantis number to project
+                        string mantisLine = drm.Message.Substring(match.Length, drm.Message.Length - match.Length);
+                        string[] mantisItems = mantisLine.Split('、');
+                        foreach (string item in mantisItems)
+                            ar.MantisList.Add(item);
+                    }
+                    else
+                    {
+                        // add message line to corresponding project
+                        ar.ProjectContent.Add(drm.Message);
+                    }
+
                 }
                 // pipe to notepad
                 string strText = "";
@@ -489,6 +611,37 @@ namespace DailyReport
             int monthDays = DateTime.DaysInMonth(DateTime.Today.Year, DateTime.Today.Month);
             DateTime endDay = startDay.AddDays(monthDays - 1);
             await GenerateReport(startDay, endDay);
+        }
+
+        private void sinceDatePicker_SelectedDateChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            sinceDate = sinceDatePicker.SelectedDate.Value;
+            tbSubject.Text = sinceDate.ToString("MM/dd", System.Globalization.CultureInfo.InvariantCulture) + " 進度報告";
+        }
+
+        private async void btnGo_Click(object sender, RoutedEventArgs e)
+        {
+            // set time to previus date at 23:59
+            DateTime yesterday = sinceDate.AddDays(-1);
+            yesterday = new DateTime(
+                yesterday.Year,
+                yesterday.Month,
+                yesterday.Day,
+                23,
+                59,
+                59);
+            DateTime untilDate = yesterday.AddDays(1);
+
+            reportPanel.Children.Clear();
+
+            if (cbWC8.IsChecked == true)
+                await LoadCommits("WorldCard", @"C:\Workspace\WorldCard8\.git", yesterday, untilDate);
+            if (cbWCT.IsChecked == true)
+                await LoadCommits("WorldCardTeam", @"C:\Workspace\WorldCardTeam\.git", yesterday, untilDate);
+            if (cbWCE.IsChecked == true)
+                await LoadCommits("WorldCard Enterprise", @"C:\Workspace\WorldCardEnterprice\.git", yesterday, untilDate);
+            if (cbSM.IsChecked == true)
+                await LoadCommits("Scanner Manager", @"C:\Workspace\ScannerManager\.git", yesterday, untilDate);
         }
     }
 }

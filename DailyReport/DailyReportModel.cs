@@ -7,6 +7,15 @@ using SQLite;
 
 namespace DailyReport
 {
+    public class PeriodReport
+    {
+        public DateTime Date { get; set; }
+        public int ProjectID { get; set; }
+        public string ProjectName { get; set; }
+        public string Message { get; set; }
+        public string Version { get; set; }
+    }
+
     public abstract class BaseModel
     {
         [PrimaryKey, AutoIncrement]

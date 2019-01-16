@@ -75,6 +75,16 @@ namespace DailyReport
             return await query.ToListAsync();
         }
 
+        public async Task<IEnumerable<PeriodReport>> ReadPeriodReport(DateTime startDate, DateTime endDate)
+        {
+            string query = "select * from DailyReportModel "
+                + "inner join ProjectReport on DailyReportModel.ProjectId = ProjectReport.Id "
+                + "where DailyReportModel.Date >= ? "
+                + "order by ProjectReport.ProjectName, ProjectReport.Version, DailyReportModel.Date";
+
+            return await _connection.DeferredQueryAsync<PeriodReport>(query, startDate);
+        }
+
         public async Task<bool> WriteAsync<T>(T report) where T : BaseModel
         {
             if (report == null)

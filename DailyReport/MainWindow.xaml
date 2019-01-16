@@ -20,21 +20,33 @@
             <RowDefinition Height="25"/>
             <RowDefinition Height="25"/>
             <RowDefinition Height="25"/>
+            <RowDefinition Height="25"/>
             <RowDefinition/>
             <RowDefinition Height="40"/>
             <RowDefinition Height="45"/>
         </Grid.RowDefinitions>
-        
-        <Label Grid.Row="0">主旨</Label>
-        <TextBox Name="tbSubject" Grid.Row="0" Margin="40,0,0,0"/>
 
-        <Label Grid.Row="1">收件</Label>
-        <TextBox Name="tbAddress" Grid.Row="1" Margin="40,0,0,0"/>
-        
-        <Label Grid.Row="2">副本</Label>
-        <TextBox Name="tbCC" Grid.Row="2" Margin="40,0,0,0"/>
+        <DockPanel Grid.Row="0">
+            <CheckBox Name="cbWC8" Margin="5" IsChecked="True">WorldCard 8</CheckBox>
+            <CheckBox Name="cbWCT" Margin="5" IsChecked="True">WorldCard Team</CheckBox>
+            <CheckBox Name="cbWCE" Margin="5">WorldCard Enterprise</CheckBox>
+            <CheckBox Name="cbSM" Margin="5">Scanner Manager</CheckBox>
+        </DockPanel>
 
-        <ScrollViewer Grid.Row="3" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible" Margin="5,0,0,0">
+        <DockPanel Grid.Row="1">
+            <Label Width="40" DockPanel.Dock="Left">主旨</Label>
+            <TextBox Name="tbSubject" Width="320" DockPanel.Dock="Left"/>
+            <DatePicker Name="sinceDatePicker" Width="100" DockPanel.Dock="Left" SelectedDateChanged="sinceDatePicker_SelectedDateChanged" Background="White"/>
+            <Button Name="btnGo" Click="btnGo_Click">GO</Button>
+        </DockPanel>
+
+        <Label Grid.Row="2">收件</Label>
+        <TextBox Name="tbAddress" Grid.Row="2" Margin="40,0,0,0"/>
+        
+        <Label Grid.Row="3">副本</Label>
+        <TextBox Name="tbCC" Grid.Row="3" Margin="40,0,0,0"/>
+
+        <ScrollViewer Grid.Row="4" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible" Margin="5,0,0,0">
             <StackPanel Name="editPanel" Margin="0,0,5,0">                
                 <StackPanel Name="reportPanel" Margin="0,3,0,0"/>
                 <Label>　</Label>
@@ -43,8 +55,8 @@
             </StackPanel>
         </ScrollViewer>
 
-        <Button Name="btnMail" Grid.Row="4" Click="btnMail_Click" Margin="5,5,5,0">寄信！</Button>
-        <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="5,5,5,5">            
+        <Button Name="btnMail" Grid.Row="5" Click="btnMail_Click" Margin="5,5,5,0">寄信！</Button>
+        <StackPanel Grid.Row="6" Orientation="Horizontal" Margin="5,5,5,5">            
             <Button Name="btnSaveDB" Click="btnSaveDB_Click" Width="80">儲存至 DB</Button>
             <Button Name="btnWeekly" Click="btnWeekly_Click"  Width="80">產生週報</Button>
             <Button Name="btnMonthly" Click="btnMonthly_Click"  Width="80">產生月報</Button>
