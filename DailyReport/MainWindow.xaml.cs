@@ -28,15 +28,17 @@ namespace DailyReport
             Loaded += MainWindow_Loaded;
         }
 
-        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             sinceDatePicker.SelectedDate = DateTime.Today;
             //tbSubject.Text = DateTime.Today.ToString("MM/dd", System.Globalization.CultureInfo.InvariantCulture) + " 進度報告";
+            tbAddress.Text = "Julio.Huang@penpower.com.tw";
+            tbCC.Text = "Joshua.Zhan@penpower.com.tw";
 
             //await LoadWCTCommits();
             //await LoadScannerManagerCommits();
             //await TestDB();
-            
+
             //await LoadCommits("WorldCardTeam", @"C:\Workspace\WorldCardTeam\.git");
             //await LoadCommits("WorldCard Enterprise", @"C:\Workspace\WorldCardEnterprice\.git");
             //await LoadCommits("Scanner Manager", @"C:\Workspace\ScannerManager\.git");            
@@ -508,14 +510,15 @@ namespace DailyReport
             btnSaveDB.IsEnabled = true;
         }
 
-        private async Task GenerateReport(DateTime startDay, DateTime endDay)
+        private async Task<string> GenerateReport(DateTime startDay, DateTime endDay)
         {
+            string strText = "";
             // get this week's DailyReportModel
             DatabaseManager dbm = new DatabaseManager();
             await dbm.Init();
             if (dbm.Open())
             {
-                var alist = await dbm.ReadPeriodReport(startDay, endDay);
+                var alist = await dbm.ReadPeriodReportAsync(startDay, endDay);
 
 
                 //// get daily reports
@@ -565,7 +568,6 @@ namespace DailyReport
 
                 }
                 // pipe to notepad
-                string strText = "";
                 weeklyReport.Sort();
                 foreach (AccumulatedReport r in weeklyReport)
                 {
@@ -592,16 +594,22 @@ namespace DailyReport
                 */
             }
             dbm.Dispose();
+            return strText;
         }
 
-        private async void btnWeekly_Click(object sender, RoutedEventArgs e)
+        private async Task<string> GenerateWeekly()
         {
             // calculate date
             DayOfWeek dayOfWeek = System.Globalization.CultureInfo.InvariantCulture.Calendar.GetDayOfWeek(DateTime.Today);
             int shiftedDay = (int)dayOfWeek;
             DateTime startDay = DateTime.Today.AddDays(-shiftedDay);
             DateTime endDay = startDay.AddDays(7);
-            await GenerateReport(startDay, endDay);
+            return await GenerateReport(startDay, endDay);
+        }
+
+        private async void btnWeekly_Click(object sender, RoutedEventArgs e)
+        {
+            await GenerateWeekly();
         }
 
         private async void btnMonthly_Click(object sender, RoutedEventArgs e)
@@ -642,6 +650,57 @@ namespace DailyReport
                 await LoadCommits("WorldCard Enterprise", @"C:\Workspace\WorldCardEnterprice\.git", yesterday, untilDate);
             if (cbSM.IsChecked == true)
                 await LoadCommits("Scanner Manager", @"C:\Workspace\ScannerManager\.git", yesterday, untilDate);
+        }
+
+        private void btnAllView_Click(object sender, RoutedEventArgs e)
+        {
+            AllView allViewWin = new AllView();
+            allViewWin.Owner = this;
+            allViewWin.ShowDialog();
+        }
+
+        private async void btnTimeSpan_Click(object sender, RoutedEventArgs e)
+        {
+            TimeSpanWindow tsw = new TimeSpanWindow();
+            tsw.Owner = this;
+            if (tsw.ShowDialog() == true)
+            {
+                await GenerateReport(tsw.StartDate, tsw.EndDate);
+            }
+        }
+
+        private async void btnGoogleSheet_Click(object sender, RoutedEventArgs e)
+        {
+            btnGoogleSheet.IsEnabled = false;
+            GoogleSheet googleSheet = new GoogleSheet();
+            if (googleSheet.Init())
+            {
+                SheetPreview sheetPreview = await googleSheet.GetSheetPreviewAsync();
+                if (sheetPreview != null)
+                {
+                    string report = await GenerateWeekly();
+                    if (string.IsNullOrEmpty(report))
+                        MessageBox.Show("Report is empty!");
+                    else
+                    {
+                        try
+                        {
+                            GoogleSheetWindow gsw = new GoogleSheetWindow(sheetPreview, report);
+                            gsw.Owner = this;
+                            if (gsw.ShowDialog() == true)
+                            {
+                                await googleSheet.UpdateSheetAsync(gsw.MakeRowData());
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }
+                    }
+                }
+            }
+            googleSheet.Dispose();
+            btnGoogleSheet.IsEnabled = true;
         }
     }
 }

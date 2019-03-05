@@ -60,6 +60,9 @@
             <Button Name="btnSaveDB" Click="btnSaveDB_Click" Width="80">儲存至 DB</Button>
             <Button Name="btnWeekly" Click="btnWeekly_Click"  Width="80">產生週報</Button>
             <Button Name="btnMonthly" Click="btnMonthly_Click"  Width="80">產生月報</Button>
+            <Button Name="btnGoogleSheet" Click="btnGoogleSheet_Click"  Width="80">Google 表單</Button>
+            <Button Name="btnAllView" Click="btnAllView_Click"  Width="80">All View</Button>
+            <Button Name="btnTimeSpan" Click="btnTimeSpan_Click" Width="80">指定範圍...</Button>
         </StackPanel>        
     </Grid>
 </Window>

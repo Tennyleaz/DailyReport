@@ -7,13 +7,61 @@ using SQLite;
 
 namespace DailyReport
 {
-    public class PeriodReport
+    public class PeriodReport : IComparable<PeriodReport>
     {
         public DateTime Date { get; set; }
         public int ProjectID { get; set; }
         public string ProjectName { get; set; }
         public string Message { get; set; }
         public string Version { get; set; }
+        public string FullDisplayProject
+        {
+            get
+            {
+                return ProjectName + " " + Version;
+            }
+        }
+        public string DisplayDate
+        {
+            get
+            {
+                return Date.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+            }
+        }
+        public override string ToString()
+        {
+            return DisplayDate + "\t" + FullDisplayProject + "\t" + Message;
+        }
+
+        int IComparable<PeriodReport>.CompareTo(PeriodReport other)
+        {
+            if (other == null)
+                return -1;
+            else
+            {
+                if (ProjectID == other.ProjectID)
+                {
+                    if (Date == other.Date)
+                        return Message.CompareTo(other.Message);
+                    else
+                        return Date.CompareTo(other.Date);
+                }
+                else if (ProjectName == other.ProjectName)
+                {
+                    if (Version == other.Version)
+                    {
+                        Console.WriteLine("shouldn't go here...");
+                        return 0;
+                    }
+                    else
+                        return Version.CompareTo(other.Version);
+                }
+                else
+                {
+                    return ProjectName.CompareTo(other.ProjectName);
+                }
+            }
+        }
     }
 
     public abstract class BaseModel
