@@ -113,7 +113,10 @@ namespace DailyReport
                     {
                         // 移除所有帶mantis的行數
                         if (HasMantisBug(cr.Header))
+                        {
                             cr.Body = FindMantisNumbers(cr.Body);
+                            cr.Header = TrimMantisHeader(cr.Header);
+                        }
 
                         if (cr.Body.Count > 0 || !string.IsNullOrWhiteSpace(cr.Header))
                         {
@@ -395,6 +398,19 @@ namespace DailyReport
             if (match.Success)
                 return true;
             return false;
+        }
+
+        private string TrimMantisHeader(string header)
+        {
+            // BUG：修正 Mantis 上的問題
+            string pattern = "BUG(：|:)修正 *(M|m)antis *上的問題(。|.)+";
+            var regex = new Regex(pattern);
+            var match = regex.Match(header);
+            if (match.Success)
+            {
+                return header.Substring(match.Index + match.Length);
+            }
+            return header;
         }
 
         private List<string> FindMantisNumbers(List<string> commitMessageLines)
