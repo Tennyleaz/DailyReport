@@ -35,8 +35,10 @@
 
         <DockPanel Grid.Row="1">
             <Label Width="40" DockPanel.Dock="Left">主旨</Label>
-            <TextBox Name="tbSubject" Width="320" DockPanel.Dock="Left"/>
+            <TextBox Name="tbSubject" Width="205" DockPanel.Dock="Left"/>
             <DatePicker Name="sinceDatePicker" Width="100" DockPanel.Dock="Left" SelectedDateChanged="sinceDatePicker_SelectedDateChanged" Background="White"/>
+            <Label>-</Label>
+            <DatePicker Name="endDatePicker" Width="100" DockPanel.Dock="Left" SelectedDateChanged="endDatePicker_SelectedDateChanged"  Background="White"/>
             <Button Name="btnGo" Click="btnGo_Click">GO</Button>
         </DockPanel>
 

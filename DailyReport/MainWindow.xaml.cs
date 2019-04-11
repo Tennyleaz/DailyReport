@@ -18,8 +18,7 @@ namespace DailyReport
         private HashSet<string> mantisNumbers = new HashSet<string>();
         private List<CommitReport> wctReports = new List<CommitReport>();
         private List<CommitReport> smReports = new List<CommitReport>();
-        private DateTime sinceDate;
-        //private DateTime untilDate;
+        private DateTime sinceDate, endDate;
 
         public MainWindow()
         {
@@ -31,6 +30,7 @@ namespace DailyReport
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             sinceDatePicker.SelectedDate = DateTime.Today;
+            endDatePicker.SelectedDate = DateTime.Today;
             //tbSubject.Text = DateTime.Today.ToString("MM/dd", System.Globalization.CultureInfo.InvariantCulture) + " 進度報告";
             tbAddress.Text = "Julio.Huang@penpower.com.tw";
             tbCC.Text = "Joshua.Zhan@penpower.com.tw";
@@ -627,6 +627,20 @@ namespace DailyReport
             tbSubject.Text = sinceDate.ToString("MM/dd", System.Globalization.CultureInfo.InvariantCulture) + " 進度報告";
         }
 
+
+        private void endDatePicker_SelectedDateChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (endDatePicker.SelectedDate.Value >= sinceDate)
+            {
+                endDate = endDatePicker.SelectedDate.Value;
+            }
+            else
+            {                
+                MessageBox.Show("End date must be later!");
+                endDatePicker.SelectedDate = endDate;  // window loaded value
+            }
+        }
+
         private async void btnGo_Click(object sender, RoutedEventArgs e)
         {
             // set time to previus date at 23:59
@@ -638,9 +652,11 @@ namespace DailyReport
                 23,
                 59,
                 59);
-            DateTime untilDate = yesterday.AddDays(1);
+            DateTime untilDate = endDate.AddDays(1);
 
             reportPanel.Children.Clear();
+            mantisNumbers.Clear();
+            reports.Clear();
 
             if (cbWC8.IsChecked == true)
                 await LoadCommits("WorldCard", @"C:\Workspace\WorldCard8\.git", yesterday, untilDate);
