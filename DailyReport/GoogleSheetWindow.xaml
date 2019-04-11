@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:DailyReport"
         mc:Ignorable="d"
         Background="#FFE4E4E4"
-        Title="Google Sheet Preview" Height="600" Width="500">
+        WindowStartupLocation="CenterOwner"
+        Title="Google Sheet Preview" Height="800" Width="600">
     <DockPanel LastChildFill="True">
         <local:RoundedButton DockPanel.Dock="Bottom" HorizontalAlignment="Right" Click="RoundedButton_Click" Margin="0,0,10,10"/>
         <Grid ShowGridLines="True" DockPanel.Dock="Top">
@@ -26,7 +27,7 @@
             <TextBlock Name="tbPreviousWeekPlan"  Grid.Row="1" Grid.Column="1" Margin="5" TextWrapping="Wrap"/>
 
             <TextBlock Name="tbThisWeekDate" Grid.Row="2" Grid.Column="0" Margin="5"/>
-            <TextBox Name="tbThisWeekContent" Grid.Row="2" Grid.Column="1" Margin="5" AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto" MaxHeight="200"/>
+            <TextBox Name="tbThisWeekContent" Grid.Row="2" Grid.Column="1" Margin="5" AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto" MaxHeight="600"/>
             <TextBox Name="tbThisWeekPlan" Grid.Row="3" Grid.Column="1" Margin="5" AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto" MaxHeight="120"/>        
         </Grid>
     </DockPanel>

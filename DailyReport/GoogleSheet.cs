@@ -129,7 +129,7 @@ namespace DailyReport
             {
                 SheetId = 288934192,  // 數位開發部 sheet id
                 StartRowIndex = targetRow,
-                EndRowIndex = targetRow + 2,
+                EndRowIndex = targetRow + 2,  // range start at left value, does not contain right value
                 StartColumnIndex = 5,
                 EndColumnIndex = 6            
             };

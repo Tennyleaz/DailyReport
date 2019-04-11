@@ -687,10 +687,10 @@ namespace DailyReport
                         {
                             GoogleSheetWindow gsw = new GoogleSheetWindow(sheetPreview, report);
                             gsw.Owner = this;
-                            if (gsw.ShowDialog() == true)
-                            {
-                                await googleSheet.UpdateSheetAsync(gsw.MakeRowData());
-                            }
+                            if (gsw.ShowDialog() == true)                            
+                                await googleSheet.UpdateSheetAsync(gsw.MakeRowData());                            
+                            else
+                                MessageBox.Show("Do nothing.");
                         }
                         catch (Exception ex)
                         {

@@ -52,7 +52,7 @@ namespace DailyReport
             if (!string.IsNullOrEmpty(_preview.NextWeekContent))
             {
                 tbThisWeekContent.Text = _preview.NextWeekContent;
-                NotepadEditor.PipeTextToNotepad(_report);
+                MessageBox.Show(this, "Report has content already.");
             }
             else
             {
@@ -65,7 +65,8 @@ namespace DailyReport
 
         private void RoundedButton_Click(object sender, RoutedEventArgs e)
         {
-            DialogResult = true;
+            if (!string.IsNullOrEmpty(tbThisWeekContent.Text))
+                DialogResult = true;
         }
 
         public List<RowData> MakeRowData()
