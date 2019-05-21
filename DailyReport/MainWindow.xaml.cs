@@ -513,7 +513,7 @@ namespace DailyReport
                     }
                     foreach (string number in report.MantisList)
                     {
-                        Mantis m = new Mantis() { MantisNumber = number, Date = sinceDate };
+                        Mantis m = new Mantis() { MantisNumber = number, Date = sinceDate, ProjectId = pr.Id };
                         await dbm.WriteAsync(m);
                     }
                 }

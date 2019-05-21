@@ -147,6 +147,7 @@ namespace DailyReport
     {
         public DateTime Date { get; set; }
         public string MantisNumber { get; set; }
+        public int ProjectId { get; set; }
     }
 
     public class DailyReportModel : BaseModel

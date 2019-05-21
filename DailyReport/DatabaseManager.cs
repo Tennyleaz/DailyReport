@@ -47,12 +47,30 @@ namespace DailyReport
             return await query.FirstAsync();
         }
 
+        public async Task<List<DailyReportModel>> ReadAllReportsAsync()
+        {
+            if (_connection == null)
+                return null;
+
+            var query = _connection.Table<DailyReportModel>();
+            return await query.ToListAsync();
+        }
+
         public async Task<List<Commit>> ReadAllCommitsAsync()
         {
             if (_connection == null)
                 return null;
 
             var query = _connection.Table<Commit>();
+            return await query.ToListAsync();
+        }
+
+        public async Task<List<Mantis>> ReadAllMantisAsync()
+        {
+            if (_connection == null)
+                return null;
+
+            var query = _connection.Table<Mantis>();
             return await query.ToListAsync();
         }
 
@@ -206,11 +224,11 @@ namespace DailyReport
 
         public async Task<bool> Init()
         {
-            if (File.Exists(_dbPath))
-            {                
-                return true;
-            }
-            else
+            //if (File.Exists(_dbPath))
+            //{                
+            //    return true;
+            //}
+            //else
             {
                 try
                 {
@@ -237,7 +255,7 @@ namespace DailyReport
             await connection.CreateTableAsync(typeof(Commit), CreateFlags.None);
             await connection.CreateTableAsync(typeof(ProjectReport), CreateFlags.None);
             await connection.CreateTableAsync(typeof(DailyReportModel), CreateFlags.None);
-            await connection.CreateTableAsync(typeof(Mantis), CreateFlags.None);
+            await connection.CreateTableAsync(typeof(Mantis), CreateFlags.None);            
             await connection.CloseAsync();
         }
 

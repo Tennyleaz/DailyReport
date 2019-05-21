@@ -150,8 +150,8 @@ namespace DailyReport
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
+                return false;
             }
-            return false;  
         }
 
         public void Dispose()
