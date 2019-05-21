@@ -129,6 +129,7 @@
     <Compile Include="GoogleSheetWindow.xaml.cs">
       <DependentUpon>GoogleSheetWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MyHttpClient.cs" />
     <Compile Include="NotepadEditor.cs" />
     <Compile Include="Report.cs" />
     <Compile Include="ReportControl.xaml.cs">
@@ -137,9 +138,11 @@
     <Compile Include="RoundedButton.xaml.cs">
       <DependentUpon>RoundedButton.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Serializer.cs" />
     <Compile Include="TimeSpanWindow.xaml.cs">
       <DependentUpon>TimeSpanWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WebDBManager.cs" />
     <Page Include="AllView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
