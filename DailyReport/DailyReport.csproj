@@ -142,6 +142,9 @@
     <Compile Include="TimeSpanWindow.xaml.cs">
       <DependentUpon>TimeSpanWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UploadDBWindow.xaml.cs">
+      <DependentUpon>UploadDBWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WebDBManager.cs" />
     <Page Include="AllView.xaml">
       <SubType>Designer</SubType>
@@ -173,6 +176,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="TimeSpanWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UploadDBWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

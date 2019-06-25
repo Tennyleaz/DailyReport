@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using GitMessageParser;
 using System.Text.RegularExpressions;
+using System.Windows.Threading;
 
 namespace DailyReport
 {
@@ -41,7 +42,7 @@ namespace DailyReport
 
             //await LoadCommits("WorldCardTeam", @"C:\Workspace\WorldCardTeam\.git");
             //await LoadCommits("WorldCard Enterprise", @"C:\Workspace\WorldCardEnterprice\.git");
-            //await LoadCommits("Scanner Manager", @"C:\Workspace\ScannerManager\.git");            
+            //await LoadCommits("Scanner Manager", @"C:\Workspace\ScannerManager\.git");
         }
 
         /*private async Task TestDB()
@@ -490,6 +491,7 @@ namespace DailyReport
             btnSaveDB.IsEnabled = false;
 
             DatabaseManager dbm = new DatabaseManager();
+            WebDBManager webM = new WebDBManager(serverUrl);
             await dbm.Init();
             if (dbm.Open())
             {
@@ -499,6 +501,13 @@ namespace DailyReport
                     pr.Version = report.ProjectVersion;
                     pr.ProjectName = report.ProjectName;
                     int pid = await dbm.TryAddProject(pr);
+                    int remotePid = await webM.TryAddProjectAsync(pr);
+
+                    if (pid != remotePid)
+                    {
+                        string errorMessage = string.Format("local & remote pid not match!\n{0} != {1}", pid, remotePid);
+                        MessageBox.Show(errorMessage);
+                    }
 
                     foreach (MyProgress mp in report.DailyProgresses)
                     {
@@ -509,12 +518,14 @@ namespace DailyReport
                             drm.Message = mp.MyValue;
                             drm.ProjectId = pid;
                             await dbm.WriteAsync(drm);
+                            await webM.AddNew(drm, "DailyReport");
                         }
                     }
                     foreach (string number in report.MantisList)
                     {
                         Mantis m = new Mantis() { MantisNumber = number, Date = sinceDate, ProjectId = pr.Id };
                         await dbm.WriteAsync(m);
+                        await webM.AddNew(m, "Mantis");
                     }
                 }
                 MessageBox.Show("OK");
@@ -522,6 +533,7 @@ namespace DailyReport
             else
                 MessageBox.Show("DB open failed!");
             dbm.Dispose();
+            webM.Dispose();
 
             btnSaveDB.IsEnabled = true;
         }
@@ -536,6 +548,11 @@ namespace DailyReport
             {
                 var alist = await dbm.ReadPeriodReportAsync(startDay, endDay);
 
+                List<PeriodReport> list2;
+                using (WebDBManager wdManager = new WebDBManager(serverUrl))
+                {
+                    list2 = await wdManager.ReadPeriodReportAsync(startDay, endDate);
+                }
 
                 //// get daily reports
                 //List<DailyReportModel> dList = await dbm.ReadReportAsync(startDay, endDay);
@@ -733,6 +750,25 @@ namespace DailyReport
             }
             googleSheet.Dispose();
             btnGoogleSheet.IsEnabled = true;
+        }
+
+        private void btnMigerate_Click(object sender, RoutedEventArgs e)
+        {
+            btnMigerate.IsEnabled = false;
+            if (MessageBox.Show("Upload ALL data to server?", "Warning", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    UploadDBWindow udw = new UploadDBWindow(serverUrl);
+                    udw.Owner = this;
+                    udw.ShowDialog();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+            }
+            btnMigerate.IsEnabled = true;
         }
     }
 }
