@@ -21,45 +21,91 @@ namespace DailyReport
     public partial class AllView : Window
     {
         private ObservableCollection<PeriodReport> reportList;
+        private readonly string serverUrl;
 
-        public AllView()
+        /// <summary>
+        /// Show all period report.
+        /// </summary>
+        /// <param name="serverUrl">If serverUrl is null, only read local DB.</param>
+        public AllView(string serverUrl = null)
         {
             InitializeComponent();
             reportList = new ObservableCollection<PeriodReport>();
             reportListView.ItemsSource = reportList;
 
-            Loaded += AllView_Loaded;
+            if (string.IsNullOrEmpty(serverUrl))
+                Loaded += AllView_Loaded;
+            else
+            {
+                this.serverUrl = serverUrl;
+                Loaded += AllView_Loaded2;
+            }
+        }
+
+        private async void AllView_Loaded2(object sender, RoutedEventArgs e)
+        {
+            using (WebDBManager webm = new WebDBManager(serverUrl))
+            {
+                try
+                {
+                    var prList = await webm.ReadAllPeriodReportAsync();
+                    if (prList != null)
+                    {
+                        prList.Sort();
+                        foreach (PeriodReport pr in prList)
+                        {
+                            reportList.Add(pr);
+                        }
+                    }
+                    else
+                    {
+                        PeriodReport testPR = new PeriodReport()
+                        {
+                            Date = DateTime.MinValue,
+                            ProjectName = "---",
+                            Message = "No report"
+                        };
+                        reportList.Add(testPR);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
 
         private async void AllView_Loaded(object sender, RoutedEventArgs e)
         {
-            DatabaseManager dbm = new DatabaseManager();
-            await dbm.Init();
-            if (dbm.Open())
+            using (DatabaseManager dbm = new DatabaseManager())
             {
-                var prList = await dbm.ReadAllPeriodReportAsync();
-                if (prList != null)
+                await dbm.Init();
+                if (dbm.Open())
                 {
-                    foreach (PeriodReport pr in prList)
+                    var prList = await dbm.ReadAllPeriodReportAsync();
+                    if (prList != null)
                     {
-                        reportList.Add(pr);
+                        foreach (PeriodReport pr in prList)
+                        {
+                            reportList.Add(pr);
+                        }
+                    }
+                    else
+                    {
+                        PeriodReport testPR = new PeriodReport()
+                        {
+                            Date = DateTime.MinValue,
+                            ProjectName = "---",
+                            Message = "No report"
+                        };
+                        reportList.Add(testPR);
                     }
                 }
                 else
                 {
-                    PeriodReport testPR = new PeriodReport()
-                    {
-                        Date = DateTime.MinValue,
-                        ProjectName = "---",                        
-                        Message = "No report"
-                    };
-                    reportList.Add(testPR);
+                    MessageBox.Show("database open failed.");
+                    Close();
                 }
-            }
-            else
-            {
-                MessageBox.Show("database open failed.");
-                Close();
             }
         }
 

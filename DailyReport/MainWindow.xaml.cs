@@ -703,9 +703,14 @@ namespace DailyReport
 
         private void btnAllView_Click(object sender, RoutedEventArgs e)
         {
-            AllView allViewWin = new AllView();
+            AllView allViewWin;
+            if (MessageBox.Show(this, "Use remore server " + serverUrl + " ?", string.Empty, MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                allViewWin = new AllView(serverUrl);
+            else
+                allViewWin = new AllView();
             allViewWin.Owner = this;
             allViewWin.ShowDialog();
+            e.Handled = true;
         }
 
         private async void btnTimeSpan_Click(object sender, RoutedEventArgs e)
