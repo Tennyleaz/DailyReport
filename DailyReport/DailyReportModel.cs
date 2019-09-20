@@ -48,7 +48,13 @@ namespace DailyReport
                 }
                 else if (ProjectName == other.ProjectName)
                 {
-                    if (Version == other.Version)
+                    if (Version == null && other.Version == null)
+                        return 0;
+                    else if (Version == null)
+                        return 1;
+                    else if (other.Version == null)
+                        return -1;
+                    else if (Version == other.Version)
                     {
                         Console.WriteLine("shouldn't go here...");
                         return 0;
