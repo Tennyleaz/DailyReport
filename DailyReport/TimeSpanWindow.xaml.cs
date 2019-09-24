@@ -21,6 +21,7 @@ namespace DailyReport
     {
         public DateTime StartDate { get; private set; }
         public DateTime EndDate { get; private set; }
+        public bool MergeSameProject { get; private set; }
 
         public TimeSpanWindow()
         {
@@ -33,6 +34,7 @@ namespace DailyReport
             {
                 StartDate = dateStart.SelectedDate.Value;
                 EndDate = dateEnd.SelectedDate.Value;
+                MergeSameProject = mergeProjectBox.IsChecked == true;
                 if (EndDate > StartDate)
                 {
                     DialogResult = true;

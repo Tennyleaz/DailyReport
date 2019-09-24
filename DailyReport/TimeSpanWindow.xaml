@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         WindowStyle="ToolWindow" ShowInTaskbar="False"        
         WindowStartupLocation="CenterOwner"
-        Title="TimeSpanWindow" Height="110" Width="200">
+        Title="TimeSpanWindow" Height="125" Width="200">
     <Window.Resources>
         <Style TargetType="Button">
             <Setter Property="Background" Value="#B388FF"/>
@@ -19,6 +19,7 @@
     <StackPanel>
         <DatePicker Name="dateStart"/>
         <DatePicker Name="dateEnd"/>
+        <CheckBox Name="mergeProjectBox" Content="Merge Same Project" HorizontalAlignment="Center" Height="17"/>
         <Button Name="btnOK" Click="btnOK_Click" Height="20">OK</Button>
     </StackPanel>
 </Window>

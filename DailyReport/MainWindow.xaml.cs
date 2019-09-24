@@ -538,7 +538,7 @@ namespace DailyReport
             btnSaveDB.IsEnabled = true;
         }
 
-        private async Task<string> GenerateReport(DateTime startDay, DateTime endDay)
+        private async Task<string> GenerateReport(DateTime startDay, DateTime endDay, bool useRemoteDb , bool mergeSameProject = false)
         {
             string strText = "";
             // get this week's DailyReportModel
@@ -546,14 +546,16 @@ namespace DailyReport
             await dbm.Init();
             if (dbm.Open())
             {
-                var alist = await dbm.ReadPeriodReportAsync(startDay, endDay);
-
-                List<PeriodReport> list2;
-                using (WebDBManager wdManager = new WebDBManager(serverUrl))
+                IEnumerable<PeriodReport> alist;
+                if (useRemoteDb)
                 {
-                    list2 = await wdManager.ReadPeriodReportAsync(startDay, endDate);
+                    using (WebDBManager wdManager = new WebDBManager(serverUrl))
+                    {
+                        alist = await wdManager.ReadPeriodReportAsync(startDay, endDate);
+                    }
                 }
-
+                else
+                    alist = await dbm.ReadPeriodReportAsync(startDay, endDay);
                 //// get daily reports
                 //List<DailyReportModel> dList = await dbm.ReadReportAsync(startDay, endDay);
                 //// get all project list
@@ -600,8 +602,13 @@ namespace DailyReport
                     }
 
                 }
-                // pipe to notepad
+
+                // sort and merge
+                if (mergeSameProject)
+                    weeklyReport = MergeSameReports(weeklyReport);
                 weeklyReport.Sort();
+
+                // pipe to notepad
                 foreach (AccumulatedReport r in weeklyReport)
                 {
                     strText += r.ToString() + Environment.NewLine;
@@ -637,7 +644,7 @@ namespace DailyReport
             int shiftedDay = (int)dayOfWeek;
             DateTime startDay = DateTime.Today.AddDays(-shiftedDay);
             DateTime endDay = startDay.AddDays(7);
-            return await GenerateReport(startDay, endDay);
+            return await GenerateReport(startDay, endDay, false);
         }
 
         private async void btnWeekly_Click(object sender, RoutedEventArgs e)
@@ -651,7 +658,7 @@ namespace DailyReport
             DateTime startDay = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
             int monthDays = DateTime.DaysInMonth(DateTime.Today.Year, DateTime.Today.Month);
             DateTime endDay = startDay.AddDays(monthDays - 1);
-            await GenerateReport(startDay, endDay);
+            await GenerateReport(startDay, endDay, false);
         }
 
         private void sinceDatePicker_SelectedDateChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -719,7 +726,7 @@ namespace DailyReport
             tsw.Owner = this;
             if (tsw.ShowDialog() == true)
             {
-                await GenerateReport(tsw.StartDate, tsw.EndDate);
+                await GenerateReport(tsw.StartDate, tsw.EndDate, false, tsw.MergeSameProject);
             }
         }
 
@@ -774,6 +781,27 @@ namespace DailyReport
                 }
             }
             btnMigerate.IsEnabled = true;
+        }
+
+        private List<AccumulatedReport> MergeSameReports(IReadOnlyList<AccumulatedReport> reports)
+        {
+            Dictionary<string, AccumulatedReport> dict = new Dictionary<string, AccumulatedReport>();
+            foreach (var report in reports)
+            {
+                if (report.ProjectName == null)
+                    report.ProjectName = string.Empty;
+
+                if (dict.ContainsKey(report.ProjectName))
+                {
+                    dict[report.ProjectName].ProjectContent.AddRange(report.ProjectContent);
+                    dict[report.ProjectName].MantisList.UnionWith(report.MantisList);
+                    // TODO: use highest version number
+                }
+                else
+                    dict.Add(report.ProjectName, report);
+            }
+
+            return dict.Values.ToList();
         }
     }
 }
