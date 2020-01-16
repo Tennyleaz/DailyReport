@@ -58,7 +58,6 @@
   -->
 
   <!-- 啟用 Windows 通用控制項和對話方塊的佈景主題 (Windows XP 以後版本) -->
-  <!--
   <dependency>
     <dependentAssembly>
       <assemblyIdentity
@@ -71,6 +70,5 @@
         />
     </dependentAssembly>
   </dependency>
-  -->
 
 </assembly>
