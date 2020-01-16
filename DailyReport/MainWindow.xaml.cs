@@ -706,6 +706,8 @@ namespace DailyReport
                 await LoadCommits("WorldCard Enterprise", @"C:\Workspace\WorldCardEnterprice\.git", yesterday, untilDate);
             if (cbSM.IsChecked == true)
                 await LoadCommits("Scanner Manager", @"C:\Workspace\ScannerManager\.git", yesterday, untilDate);
+            if (cbPDF.IsChecked == true)
+                await LoadCommits("PdfViewer", @"C:\Workspace\PDFView\PDF View 2\.git", yesterday, untilDate);
         }
 
         private void btnAllView_Click(object sender, RoutedEventArgs e)

@@ -17,21 +17,22 @@
     
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="25"/>
             <RowDefinition Height="25"/>
             <RowDefinition Height="25"/>
-            <RowDefinition Height="25"/>
-            <RowDefinition/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="40"/>
             <RowDefinition Height="45"/>
         </Grid.RowDefinitions>
 
-        <DockPanel Grid.Row="0">
-            <CheckBox Name="cbWC8" Margin="5" IsChecked="True">WorldCard 8</CheckBox>
+        <WrapPanel Grid.Row="0">
+            <CheckBox Name="cbWC8" Margin="5">WorldCard 8</CheckBox>
             <CheckBox Name="cbWCT" Margin="5" IsChecked="True">WorldCard Team</CheckBox>
             <CheckBox Name="cbWCE" Margin="5">WorldCard Enterprise</CheckBox>
             <CheckBox Name="cbSM" Margin="5">Scanner Manager</CheckBox>
-        </DockPanel>
+            <CheckBox Name="cbPDF" Margin="5">PDF Viewer</CheckBox>
+        </WrapPanel>
 
         <DockPanel Grid.Row="1">
             <Label Width="40" DockPanel.Dock="Left">主旨</Label>
