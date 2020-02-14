@@ -28,7 +28,7 @@
 
         <WrapPanel Grid.Row="0">
             <CheckBox Name="cbWC8" Margin="5">WorldCard 8</CheckBox>
-            <CheckBox Name="cbWCT" Margin="5" IsChecked="True">WorldCard Team</CheckBox>
+            <CheckBox Name="cbWCT" Margin="5">WorldCard Team</CheckBox>
             <CheckBox Name="cbWCE" Margin="5">WorldCard Enterprise</CheckBox>
             <CheckBox Name="cbSM" Margin="5">Scanner Manager</CheckBox>
             <CheckBox Name="cbPDF" Margin="5">PDF Viewer</CheckBox>

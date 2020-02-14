@@ -10,7 +10,7 @@
         <DataTemplate x:Key="UserDataTemplate">
             <Grid>
                 <Label>●</Label>
-                <TextBox Name="tbProgess" Text="{Binding Path=MyValue}" Margin="20,0,0,0" Height="20"/>
+                <TextBox Name="tbProgess" Text="{Binding Path=MyValue}" Margin="20,0,0,0" MinHeight="20" TextWrapping="Wrap" VerticalContentAlignment="Center"/>
                 <Button Name="btnRemove" Height="20" Width="20" HorizontalAlignment="Right" Click="btnRemove_Click">X</Button>
             </Grid>
         </DataTemplate>
