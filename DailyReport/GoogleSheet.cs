@@ -109,7 +109,26 @@ namespace DailyReport
             // 2019-Jan-04 (Fri), 1st week, is the 27th row in google sheet
             // 2019-Feb-27 (Wed), 9th week, is the 41st row in google sheet
             int weekCount = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            int diffYears = GetDifferenceInYears(new DateTime(2019, 1, 1), date);
+            weekCount += diffYears * 52;
             return weekCount * 2 + offset;
+        }
+
+        // from:
+        // https://stackoverflow.com/questions/4127363/date-difference-in-years-using-c-sharp
+        private int GetDifferenceInYears(DateTime startDate, DateTime endDate)
+        {
+            //Excel documentation says "COMPLETE calendar years in between dates"
+            int years = endDate.Year - startDate.Year;
+
+            if (startDate.Month == endDate.Month &&// if the start month and the end month are the same
+                endDate.Day < startDate.Day// AND the end day is less than the start day
+                || endDate.Month < startDate.Month)// OR if the end month is less than the start month
+            {
+                years--;
+            }
+
+            return years;
         }
 
         private string CalculateRange()
