@@ -142,7 +142,13 @@ namespace DailyReport
             {
                 int rtn = ProjectName.CompareTo(other.ProjectName);
                 if (rtn == 0)
+                {
+                    if (string.IsNullOrEmpty(ProjectVersion) && string.IsNullOrEmpty(other.ProjectVersion))
+                        return 0;
+                    if (string.IsNullOrEmpty(ProjectVersion))
+                        return 1;
                     return ProjectVersion.CompareTo(other.ProjectVersion);
+                }
                 else
                     return rtn;
             }                
