@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DailyReport"
+        xmlns:p="clr-namespace:DailyReport.Properties"
         mc:Ignorable="d"
         Background="#FFE4E4E4"
         Title="每日進度" Height="550" Width="525">
@@ -32,6 +33,7 @@
             <CheckBox Name="cbWCE" Margin="5">WorldCard Enterprise</CheckBox>
             <CheckBox Name="cbSM" Margin="5">Scanner Manager</CheckBox>
             <CheckBox Name="cbPDF" Margin="5">PDF Viewer</CheckBox>
+            <CheckBox Name="cbWPSX" Margin="5">WorldPenScan X</CheckBox>
         </WrapPanel>
 
         <DockPanel Grid.Row="1">
@@ -44,10 +46,10 @@
         </DockPanel>
 
         <Label Grid.Row="2">收件</Label>
-        <TextBox Name="tbAddress" Grid.Row="2" Margin="40,0,0,0"/>
+        <TextBox Name="tbAddress" Grid.Row="2" Margin="40,0,0,0" Text="{Binding Source={x:Static p:Settings.Default}, Path=MailAddress, Mode=TwoWay}"/>
         
         <Label Grid.Row="3">副本</Label>
-        <TextBox Name="tbCC" Grid.Row="3" Margin="40,0,0,0"/>
+        <TextBox Name="tbCC" Grid.Row="3" Margin="40,0,0,0" Text="{Binding Source={x:Static p:Settings.Default}, Path=CCAddress, Mode=TwoWay}"/>
 
         <ScrollViewer Grid.Row="4" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible" Margin="5,0,0,0">
             <StackPanel Name="editPanel" Margin="0,0,5,0">                

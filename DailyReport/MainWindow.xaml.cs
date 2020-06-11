@@ -26,6 +26,14 @@ namespace DailyReport
             InitializeComponent();
 
             Loaded += MainWindow_Loaded;
+            Closing += MainWindow_Closing;
+        }
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Properties.Settings.Default.MailAddress = tbAddress.Text;
+            Properties.Settings.Default.CCAddress = tbCC.Text;
+            Properties.Settings.Default.Save();
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -33,8 +41,8 @@ namespace DailyReport
             sinceDatePicker.SelectedDate = DateTime.Today;
             endDatePicker.SelectedDate = DateTime.Today;
             //tbSubject.Text = DateTime.Today.ToString("MM/dd", System.Globalization.CultureInfo.InvariantCulture) + " 進度報告";
-            tbAddress.Text = "Julio.Huang@penpower.com.tw";
-            tbCC.Text = "Joshua.Zhan@penpower.com.tw";
+            //tbAddress.Text = "Julio.Huang@penpower.com.tw";
+            //tbCC.Text = "Joshua.Zhan@penpower.com.tw";
 
             //await LoadWCTCommits();
             //await LoadScannerManagerCommits();
@@ -717,6 +725,8 @@ namespace DailyReport
                 await LoadCommits("Scanner Manager", @"C:\Workspace\ScannerManager\.git", yesterday, untilDate);
             if (cbPDF.IsChecked == true)
                 await LoadCommits("PdfViewer", @"C:\Workspace\PDFView\PDF View 2\.git", yesterday, untilDate);
+            if (cbWPSX.IsChecked == true)
+                await LoadCommits("WorldPenScan X", @"C:\Workspace\PenCamera\.git", yesterday, untilDate);
         }
 
         private void btnAllView_Click(object sender, RoutedEventArgs e)
