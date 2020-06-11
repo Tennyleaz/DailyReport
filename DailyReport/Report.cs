@@ -59,7 +59,10 @@ namespace DailyReport
         {
             if (DailyProgresses.Count > 0)
             {
-                string result = "今天" + _projectName + "進度：\n";
+                string result = "今天" + _projectName;
+                if (!string.IsNullOrWhiteSpace(_projectVersion))
+                    result += " " + _projectVersion;
+                result += "進度：\n";
                 int count = 1;
                 foreach (MyProgress mp in DailyProgresses)
                 {

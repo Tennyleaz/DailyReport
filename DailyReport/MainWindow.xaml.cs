@@ -16,7 +16,7 @@ namespace DailyReport
     public partial class MainWindow : Window
     {
         private List<Report> reports = new List<Report>();
-        private HashSet<string> mantisNumbers = new HashSet<string>();
+        //private HashSet<string> mantisNumbers = new HashSet<string>();
         private List<CommitReport> wctReports = new List<CommitReport>();
         private List<CommitReport> smReports = new List<CommitReport>();
         private DateTime sinceDate, endDate;
@@ -109,13 +109,14 @@ namespace DailyReport
 
                 if (cReports.Count > 0)
                 {
+                    HashSet<string> mantisSet = new HashSet<string>();
                     projectVersion = cReports.First().Version;
                     foreach (CommitReport cr in cReports)
                     {
                         // 移除所有帶mantis的行數
                         if (HasMantisBug(cr.Header))
                         {
-                            cr.Body = FindMantisNumbers(cr.Body);
+                            cr.Body = FindMantisNumbers(cr.Body, ref mantisSet);
                             cr.Header = TrimMantisHeader(cr.Header);
                         }
 
@@ -132,14 +133,15 @@ namespace DailyReport
                         }
                     }
 
-                    if (mantisNumbers.Count > 0)
+                    if (mantisSet.Count > 0)
                     {
                         MyProgress myProgress = new MyProgress();
                         string str = "修正 Mantis 上的問題：";
-                        str += string.Join("、", mantisNumbers);
+                        str += string.Join("、", mantisSet);
                         myProgress.MyValue = str;
                         report.DailyProgresses.Add(myProgress);
-                        report.MantisList = mantisNumbers;
+                        report.MantisList = mantisSet;
+                        mantisSet.Clear();
                     }
                 }
             };
@@ -156,6 +158,7 @@ namespace DailyReport
             }
         }
 
+        [Obsolete("Use LoadCommits() instead!", true)]
         public async Task LoadScannerManagerCommits()
         {
             Report report = new Report();
@@ -187,12 +190,13 @@ namespace DailyReport
 
                 if (smReports.Count > 0)
                 {
+                    HashSet<string> mantisSet = new HashSet<string>();
                     projectVersion = smReports.First().Version;
                     foreach (CommitReport cr in smReports)
                     {
                         // 移除所有帶mantis的行數
                         if (HasMantisBug(cr.Header))
-                            cr.Body = FindMantisNumbers(cr.Body);
+                            cr.Body = FindMantisNumbers(cr.Body, ref mantisSet);
 
                         if (cr.Body.Count > 0 || !string.IsNullOrWhiteSpace(cr.Header))
                         {
@@ -207,14 +211,14 @@ namespace DailyReport
                         }
                     }
 
-                    if (mantisNumbers.Count > 0)
+                    if (mantisSet.Count > 0)
                     {
                         MyProgress myProgress = new MyProgress();
                         string str = "修正 Mantis 上的問題：";
-                        str += string.Join("、", mantisNumbers);
+                        str += string.Join("、", mantisSet);
                         myProgress.MyValue = str;
                         report.DailyProgresses.Add(myProgress);
-                        report.MantisList = mantisNumbers;
+                        report.MantisList = mantisSet;
                     }
                 }
             };
@@ -231,6 +235,7 @@ namespace DailyReport
             }
         }
 
+        [Obsolete("Use LoadCommits() instead!", true)]
         public async Task LoadWCTCommits()
         {
             Report report = new Report();
@@ -262,6 +267,7 @@ namespace DailyReport
 
                 if (wctReports.Count > 0)
                 {
+                    HashSet<string> mantisSet = new HashSet<string>();
                     projectVersion = wctReports.First().Version;
                     foreach (CommitReport cr in wctReports)
                     {
@@ -269,7 +275,7 @@ namespace DailyReport
                         if (HasMantisBug(cr.Header))
                         {
                             cr.Header = string.Empty;
-                            cr.Body = FindMantisNumbers(cr.Body);
+                            cr.Body = FindMantisNumbers(cr.Body, ref mantisSet);
                         }
 
                         if (cr.Body.Count > 0 || !string.IsNullOrWhiteSpace(cr.Header))
@@ -285,14 +291,14 @@ namespace DailyReport
                         }
                     }
 
-                    if (mantisNumbers.Count > 0)
+                    if (mantisSet.Count > 0)
                     {
                         MyProgress myProgress = new MyProgress();
                         string str = "修正 Mantis 上的問題：";
-                        str += string.Join("、", mantisNumbers);
+                        str += string.Join("、", mantisSet);
                         myProgress.MyValue = str;
                         report.DailyProgresses.Add(myProgress);
-                        report.MantisList = mantisNumbers;
+                        report.MantisList = mantisSet;
                     }
                 }
             };
@@ -414,7 +420,10 @@ namespace DailyReport
             return header;
         }
 
-        private List<string> FindMantisNumbers(List<string> commitMessageLines)
+        /// <summary>
+        /// 回傳沒有mantis的行數，並加入mantis數字到輸入的mantisSet內。
+        /// </summary>
+        private List<string> FindMantisNumbers(List<string> commitMessageLines, ref HashSet<string> mantisSet)
         {
             List<string> remainLines = new List<string>();
             // 5~7位數字，前面有一個非數字字元，後面有一個非數字字元
@@ -434,7 +443,7 @@ namespace DailyReport
                     found = true;
                     lastMatchIndex = match.Index + match.Length;
                     string matisNum = commitMessage.Substring(match.Index + 1, match.Length - 2);
-                    mantisNumbers.Add(matisNum);
+                    mantisSet.Add(matisNum);
 
                     // 找下一個
                     commitMessage = commitMessage.Substring(match.Index + match.Length, commitMessage.Length - match.Index - match.Length);
@@ -695,7 +704,7 @@ namespace DailyReport
             DateTime untilDate = endDate.AddDays(1);
 
             reportPanel.Children.Clear();
-            mantisNumbers.Clear();
+            //mantisNumbers.Clear();
             reports.Clear();
 
             if (cbWC8.IsChecked == true)
