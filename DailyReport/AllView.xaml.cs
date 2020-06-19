@@ -27,19 +27,17 @@ namespace DailyReport
         /// Show all period report.
         /// </summary>
         /// <param name="serverUrl">If serverUrl is null, only read local DB.</param>
-        public AllView(string serverUrl = null)
+        /// <param name="useLocal">Only read local DB.</param>
+        public AllView(string serverUrl, bool useLocal)
         {
             InitializeComponent();
             reportList = new ObservableCollection<PeriodReport>();
             reportListView.ItemsSource = reportList;
-
-            if (string.IsNullOrEmpty(serverUrl))
+            this.serverUrl = serverUrl;
+            if (useLocal)
                 Loaded += AllView_Loaded;
             else
-            {
-                this.serverUrl = serverUrl;
                 Loaded += AllView_Loaded2;
-            }
         }
 
         private async void AllView_Loaded2(object sender, RoutedEventArgs e)
@@ -126,6 +124,59 @@ namespace DailyReport
                 strText += pr.ToString() + Environment.NewLine;
             }
             NotepadEditor.PipeTextToNotepad(strText);
+        }
+
+        private async void ListViewItem_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is ListViewItem item && item.IsSelected)
+            {
+                if (item.Content is PeriodReport pr)
+                {
+                    ReportEditWindow editWindow = new ReportEditWindow(pr);
+                    editWindow.Owner = this;
+                    bool? result = editWindow.ShowDialog();
+                    if (result == true)
+                    {
+                        bool updateResult;
+                        DailyReportModel updated = new DailyReportModel();
+                        updated.Message = editWindow.PeriodReport.Message;
+                        updated.ProjectId = pr.ProjectID;
+                        updated.Id = pr.ReoprtID;
+                        updated.Date = pr.Date;
+                        // update server first
+                        using (WebDBManager webm = new WebDBManager(serverUrl))
+                        {
+                            updateResult = await webm.Update(updated, "DailyReport", updated.Id);
+                        }
+                        if (!updateResult)
+                        {
+                            MessageBox.Show("Update to server failed!");
+                            return;
+                        }
+                        // update local
+                        using (DatabaseManager dbm = new DatabaseManager())
+                        {
+                            await dbm.Init();
+                            if (dbm.Open())
+                            {
+                                updateResult = await dbm.UpdateAsync(updated);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Database open failed!");
+                                return;
+                            }
+                        }
+                        if (!updateResult)
+                        {
+                            MessageBox.Show("Update to database failed!");
+                            return;
+                        }
+                        // update UI last
+                        pr.Message = editWindow.PeriodReport.Message;
+                    }
+                }
+            }
         }
     }
 }
