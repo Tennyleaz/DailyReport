@@ -123,6 +123,9 @@
     <Compile Include="ReportControl.xaml.cs">
       <DependentUpon>ReportControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ReportEditWindow.xaml.cs">
+      <DependentUpon>ReportEditWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RoundedButton.xaml.cs">
       <DependentUpon>RoundedButton.xaml</DependentUpon>
     </Compile>
@@ -156,6 +159,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="ReportControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ReportEditWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

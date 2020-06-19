@@ -1,0 +1,39 @@
+﻿<Window x:Class="DailyReport.ReportEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DailyReport"
+        mc:Ignorable="d"
+        Loaded="ReportEditWindow_OnLoaded"
+        WindowStartupLocation="CenterOwner"
+        Title="Report Edit" Height="320" Width="640" MinWidth="640">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="70"/>
+            <ColumnDefinition Width="70"/>
+            <ColumnDefinition Width="100"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="28"/>
+            <RowDefinition Height="28"/>
+            <RowDefinition Height="28"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <!--Headers-->
+        <Label Grid.Column="0" Grid.Row="0" Name="lbProjectName" VerticalAlignment="Bottom" FontSize="14" FontWeight="Bold">Project</Label>
+        <Label Grid.Column="1" Grid.Row="0" Foreground="Gray">Project Id</Label>
+        <Label Grid.Column="2" Grid.Row="0" Foreground="Gray">Report Id</Label>
+        <Label Grid.Column="3" Grid.Row="0" Foreground="Gray">Date</Label>
+        <Label Grid.Column="0" Grid.Row="2" Foreground="Gray">Report Message</Label>
+        <Button Name="btnSave" Grid.Column="3" Grid.Row="2" HorizontalAlignment="Right" Width="80" Click="BtnSave_OnClick" Margin="0,0,5,0">Save</Button>
+        <!--Content-->
+        <Label Grid.Column="0" Grid.Row="1" Name="lbProjectVersion" HorizontalAlignment="Left" VerticalAlignment="Top">Project</Label>
+        <Label Grid.Column="1" Grid.Row="1" Name="lbProjectId" HorizontalAlignment="Left" VerticalAlignment="Center">Project Id</Label>
+        <Label Grid.Column="2" Grid.Row="1" Name="lbReportId" HorizontalAlignment="Left" VerticalAlignment="Center">Report Id</Label>
+        <Label Grid.Column="3" Grid.Row="1" Name="lbDate" HorizontalAlignment="Left" VerticalAlignment="Center">1970/01/01</Label>
+        <TextBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4" Name="tbMessage" Margin="5"
+                 HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"/>
+    </Grid>
+</Window>

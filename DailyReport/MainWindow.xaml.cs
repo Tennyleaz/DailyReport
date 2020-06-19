@@ -733,9 +733,9 @@ namespace DailyReport
         {
             AllView allViewWin;
             if (MessageBox.Show(this, "Use remore server " + serverUrl + " ?", string.Empty, MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-                allViewWin = new AllView(serverUrl);
+                allViewWin = new AllView(serverUrl, false);
             else
-                allViewWin = new AllView();
+                allViewWin = new AllView(serverUrl, true);
             allViewWin.Owner = this;
             allViewWin.ShowDialog();
             e.Handled = true;
