@@ -1,18 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using SQLite;
 
 namespace DailyReport
 {
-    public class PeriodReport : IComparable<PeriodReport>
+    public class PeriodReport : IComparable<PeriodReport>, INotifyPropertyChanged
     {
+        private string message;
+        public event PropertyChangedEventHandler PropertyChanged;
         public DateTime Date { get; set; }
+        public int ReoprtID { get; set; }
         public int ProjectID { get; set; }
         public string ProjectName { get; set; }
-        public string Message { get; set; }
+
+        /// <summary>
+        /// Only this item could fire property changed event. Because other items can't change after saved to DB.
+        /// </summary>
+        public string Message
+        {
+            get => message;
+            set
+            {
+                if (value != message)
+                {
+                    message = value;
+                    FirePropertyChanged();
+                }
+            }
+        }
+
         public string Version { get; set; }
         public string FullDisplayProject
         {
@@ -28,6 +49,7 @@ namespace DailyReport
                 return Date.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
             }
         }
+
         public override string ToString()
         {
             return DisplayDate + "\t" + FullDisplayProject + "\t" + Message;
@@ -67,6 +89,11 @@ namespace DailyReport
                     return ProjectName.CompareTo(other.ProjectName);
                 }
             }
+        }
+
+        private void FirePropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 
