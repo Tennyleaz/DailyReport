@@ -63,6 +63,8 @@ namespace DailyReport
                 if (!string.IsNullOrWhiteSpace(_projectVersion))
                     result += " " + _projectVersion;
                 result += "進度：\n";
+                if (_projectName == "其他")
+                    result = "其他：\n";
                 int count = 1;
                 foreach (MyProgress mp in DailyProgresses)
                 {
