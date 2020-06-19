@@ -95,7 +95,8 @@ namespace DailyReport
 
         public async Task<IEnumerable<PeriodReport>> ReadPeriodReportAsync(DateTime startDate, DateTime endDate)
         {
-            string query = "select * from DailyReportModel "
+            string query = 
+                "select DailyReportModel.Date, DailyReportModel.ProjectId, DailyReportModel.Message, DailyReportModel.Id as ReoprtID, ProjectReport.ProjectName, ProjectReport.Version from DailyReportModel "
                 + "inner join ProjectReport on DailyReportModel.ProjectId = ProjectReport.Id "
                 + "where DailyReportModel.Date >= ? "
                 + "order by ProjectReport.ProjectName, ProjectReport.Version, DailyReportModel.Date";
@@ -105,7 +106,8 @@ namespace DailyReport
 
         public async Task<IEnumerable<PeriodReport>> ReadAllPeriodReportAsync()
         {
-            string query = "select * from DailyReportModel "
+            string query =
+                "select DailyReportModel.Date, DailyReportModel.ProjectId, DailyReportModel.Message, DailyReportModel.Id as ReoprtID, ProjectReport.ProjectName, ProjectReport.Version from DailyReportModel "
                 + "inner join ProjectReport on DailyReportModel.ProjectId = ProjectReport.Id "
                 //+ "where DailyReportModel.Date >= ? "
                 + "order by ProjectReport.ProjectName, ProjectReport.Version, DailyReportModel.Date";
