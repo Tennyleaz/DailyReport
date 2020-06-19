@@ -7,15 +7,14 @@
         mc:Ignorable="d"
         Background="#FFE4E4E4"
         WindowStartupLocation="CenterOwner"
-        Title="Google Sheet Preview" Height="800" Width="600">
-    <DockPanel LastChildFill="True">
-        <local:RoundedButton DockPanel.Dock="Bottom" HorizontalAlignment="Right" Click="RoundedButton_Click" Margin="0,0,10,10"/>
-        <Grid ShowGridLines="True" DockPanel.Dock="Top">
+        Title="Google Sheet Preview" Height="800" Width="600" MinHeight="200" MinWidth="150">
+    <Grid>
+        <Grid ShowGridLines="True">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="40"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>            
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="1*"/>            
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -23,12 +22,21 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Name="tbPreviousWeekDate" Grid.Row="0" Grid.Column="0" Margin="5"/>
-            <TextBlock Name="tbPreviousWeekContent" Grid.Row="0" Grid.Column="1" Margin="5" TextWrapping="Wrap"/>
-            <TextBlock Name="tbPreviousWeekPlan"  Grid.Row="1" Grid.Column="1" Margin="5" TextWrapping="Wrap"/>
+            <ScrollViewer Grid.Row="0" Grid.Column="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" CanContentScroll="True">
+                <TextBlock Name="tbPreviousWeekContent" Margin="5" TextWrapping="Wrap"/>
+            </ScrollViewer>
+            <ScrollViewer Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" CanContentScroll="True">
+                <TextBlock Name="tbPreviousWeekPlan" Margin="5" TextWrapping="Wrap"/>
+            </ScrollViewer>
 
             <TextBlock Name="tbThisWeekDate" Grid.Row="2" Grid.Column="0" Margin="5"/>
-            <TextBox Name="tbThisWeekContent" Grid.Row="2" Grid.Column="1" Margin="5" AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto" MaxHeight="600"/>
-            <TextBox Name="tbThisWeekPlan" Grid.Row="3" Grid.Column="1" Margin="5" AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto" MaxHeight="120"/>        
+            <Grid Grid.Row="2" Grid.Column="1">
+                <TextBox Name="tbThisWeekContent" Margin="5" AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True"/>
+            </Grid>
+            <Grid Grid.Row="3" Grid.Column="1" >
+                <TextBox Name="tbThisWeekPlan" Margin="5" AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True"/>
+            </Grid>
         </Grid>
-    </DockPanel>
+        <local:RoundedButton HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="RoundedButton_Click" Margin="0,0,15,10"/>
+    </Grid>
 </Window>
