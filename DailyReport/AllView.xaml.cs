@@ -178,5 +178,52 @@ namespace DailyReport
                 }
             }
         }
+
+        private async void ListViewItem_PreviewKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key != Key.Delete)
+                return;
+            if (sender is ListViewItem item && item.IsSelected)
+            {
+                if (item.Content is PeriodReport pr)
+                {
+                    string text = "Report:\n\"" + pr.Message + "\"\n" + "Are you sure to delete?";
+                    var msg = MessageBox.Show(this, text, pr.ProjectName, MessageBoxButton.OKCancel, MessageBoxImage.Question);
+                    if (msg != MessageBoxResult.OK)
+                        return;
+
+                    bool deleteResult;
+                    using (WebDBManager webm = new WebDBManager(serverUrl))
+                    {
+                        deleteResult = await webm.Delete("DailyReport", pr.ReoprtID);
+                    }
+                    if (!deleteResult)
+                    {
+                        MessageBox.Show("Delete from server failed!");
+                        return;
+                    }
+                    using (DatabaseManager dbm = new DatabaseManager())
+                    {
+                        await dbm.Init();
+                        if (dbm.Open())
+                        {
+                            deleteResult = await dbm.DeleteAsync<DailyReportModel>(pr.ReoprtID);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Database open failed!");
+                            return;
+                        }
+                    }
+                    if (!deleteResult)
+                    {
+                        MessageBox.Show("Delete from database failed!");
+                        return;
+                    }
+                    // update UI last
+                    reportList.Remove(pr);
+                }
+            }
+        }
     }
 }
