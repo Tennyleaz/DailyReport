@@ -134,7 +134,17 @@ namespace DailyReport
                 return false;
 
             int rtn = await _connection.UpdateAsync(report);
-            return true;
+            return (rtn > 0);
+        }
+
+        public async Task<bool> DeleteAsync<T>(int id) where T: BaseModel
+        {
+            if (id == 0)
+                return false;
+            if (_connection == null)
+                return false;
+            int rtn = await _connection.DeleteAsync<T>(id);
+            return (rtn > 0);
         }
 
         /// <summary>
