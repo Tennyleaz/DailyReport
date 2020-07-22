@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Loaded="ReportEditWindow_OnLoaded"
         WindowStartupLocation="CenterOwner"
-        Title="Report Edit" Height="320" Width="640" MinWidth="640">
+        Title="Report Edit" Height="320" Width="640" MinWidth="500" MinHeight="160">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
@@ -22,14 +22,19 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <!--Headers-->
-        <Label Grid.Column="0" Grid.Row="0" Name="lbProjectName" VerticalAlignment="Bottom" FontSize="14" FontWeight="Bold">Project</Label>
+        <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal">
+            <Label Name="lbProjectName" VerticalAlignment="Bottom" FontSize="14" FontWeight="Bold">Project</Label>
+            <TextBox Name="tbProjectNameEdit" TextWrapping="NoWrap" Width="140" Visibility="Collapsed" AcceptsReturn="False" VerticalContentAlignment="Center"/>
+            <Button Name="btnEditName" Margin="10,0,0,0" Padding="5,0,5,0" Height="20" Click="BtnEditName_OnClick">Edit</Button>
+            <Button Name="btnEditCancel" Margin="10,0,0,0" Padding="5,0,5,0" Height="20" Click="BtnEditCancel_OnClick" Visibility="Collapsed">Cancel</Button>
+        </StackPanel>
         <Label Grid.Column="1" Grid.Row="0" Foreground="Gray">Project Id</Label>
         <Label Grid.Column="2" Grid.Row="0" Foreground="Gray">Report Id</Label>
         <Label Grid.Column="3" Grid.Row="0" Foreground="Gray">Date</Label>
         <Label Grid.Column="0" Grid.Row="2" Foreground="Gray">Report Message</Label>
         <Button Name="btnSave" Grid.Column="3" Grid.Row="2" HorizontalAlignment="Right" Width="80" Click="BtnSave_OnClick" Margin="0,0,5,0">Save</Button>
         <!--Content-->
-        <Label Grid.Column="0" Grid.Row="1" Name="lbProjectVersion" HorizontalAlignment="Left" VerticalAlignment="Top">Project</Label>
+        <Label Grid.Column="0" Grid.Row="1" Name="lbProjectVersion" HorizontalAlignment="Left" VerticalAlignment="Top">Project Ver.</Label>
         <Label Grid.Column="1" Grid.Row="1" Name="lbProjectId" HorizontalAlignment="Left" VerticalAlignment="Center">Project Id</Label>
         <Label Grid.Column="2" Grid.Row="1" Name="lbReportId" HorizontalAlignment="Left" VerticalAlignment="Center">Report Id</Label>
         <Label Grid.Column="3" Grid.Row="1" Name="lbDate" HorizontalAlignment="Left" VerticalAlignment="Center">1970/01/01</Label>

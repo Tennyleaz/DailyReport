@@ -132,11 +132,30 @@ namespace DailyReport
             {
                 if (item.Content is PeriodReport pr)
                 {
-                    ReportEditWindow editWindow = new ReportEditWindow(pr);
+                    ReportEditWindow editWindow = new ReportEditWindow(pr, serverUrl);
                     editWindow.Owner = this;
                     bool? result = editWindow.ShowDialog();
+
+                    // check if project name update needed
+                    if (pr.ProjectName != editWindow.PeriodReport.ProjectName)
+                    {
+                        foreach (PeriodReport periodReport in reportList)
+                        {
+                            if (periodReport.ProjectID == pr.ProjectID)
+                                periodReport.ProjectName = editWindow.PeriodReport.ProjectName;
+                        }
+                        reportListView.UpdateLayout();
+                    }
+
                     if (result == true)
                     {
+                        // check if update needed
+                        if (pr.Message == editWindow.PeriodReport.Message)
+                        {
+                            MessageBox.Show("Nothing to update.");
+                            return;
+                        }
+
                         bool updateResult;
                         DailyReportModel updated = new DailyReportModel();
                         updated.Message = editWindow.PeriodReport.Message;

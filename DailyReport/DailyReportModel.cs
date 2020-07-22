@@ -11,12 +11,24 @@ namespace DailyReport
 {
     public class PeriodReport : IComparable<PeriodReport>, INotifyPropertyChanged
     {
-        private string message;
+        private string message, projectName;
         public event PropertyChangedEventHandler PropertyChanged;
         public DateTime Date { get; set; }
         public int ReoprtID { get; set; }
         public int ProjectID { get; set; }
-        public string ProjectName { get; set; }
+        public string ProjectName
+        {
+            get => projectName;
+            set
+            {
+                if (value != projectName)
+                {
+                    projectName = value;
+                    FirePropertyChanged("ProjectName");
+                    FirePropertyChanged("FullDisplayProject");
+                }
+            }
+        }
 
         /// <summary>
         /// Only this item could fire property changed event. Because other items can't change after saved to DB.
