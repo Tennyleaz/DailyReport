@@ -20,6 +20,7 @@ namespace DailyReport
         private List<CommitReport> wctReports = new List<CommitReport>();
         private List<CommitReport> smReports = new List<CommitReport>();
         private DateTime sinceDate, endDate;
+        private string serverUrl = "http://10.10.15.65:5001/api";  //"http://localhost:58933/api";
 
         public MainWindow()
         {
@@ -247,7 +248,7 @@ namespace DailyReport
         public async Task LoadWCTCommits()
         {
             Report report = new Report();
-            string projectName = "WorldCardTeam";
+            string projectName = "WorldCardCloud";
             string projectVersion = "";
             Action readAction = () =>
             {
@@ -331,6 +332,7 @@ namespace DailyReport
 
         private void btnAdder_Click(object sender, RoutedEventArgs e)
         {
+            List<string> suggestions = new List<string>() { "aaa", "bbb", "ccc" };
             Report report = new Report();
             reports.Add(report);
             ReportControl rc = new ReportControl(report);
@@ -718,15 +720,19 @@ namespace DailyReport
             if (cbWC8.IsChecked == true)
                 await LoadCommits("WorldCard", @"C:\Workspace\WorldCard8\.git", yesterday, untilDate);
             if (cbWCT.IsChecked == true)
-                await LoadCommits("WorldCardTeam", @"C:\Workspace\WorldCardTeam\.git", yesterday, untilDate);
+                await LoadCommits("WorldCard Cloud", @"C:\Workspace\WorldCardTeam\.git", yesterday, untilDate);
             if (cbWCE.IsChecked == true)
                 await LoadCommits("WorldCard Enterprise", @"C:\Workspace\WorldCardEnterprice\.git", yesterday, untilDate);
             if (cbSM.IsChecked == true)
                 await LoadCommits("Scanner Manager", @"C:\Workspace\ScannerManager\.git", yesterday, untilDate);
             if (cbPDF.IsChecked == true)
                 await LoadCommits("PdfViewer", @"C:\Workspace\PDFView\PDF View 2\.git", yesterday, untilDate);
-            if (cbWPSX.IsChecked == true)
-                await LoadCommits("WorldPenScan X", @"C:\Workspace\PenCamera\.git", yesterday, untilDate);
+            if (cbWDUSB.IsChecked == true)
+                await LoadCommits("Worldictionary USB", @"C:\Workspace\PenCamera\.git", yesterday, untilDate);
+            if (cbWCExpress.IsChecked == true)
+                await LoadCommits("WorldCard Express", @"C:\Workspace\WorldCardExpress\.git", yesterday, untilDate);
+            if (cbWpsGo.IsChecked == true)
+                await LoadCommits("WPS Go", @"C:\Workspace\WpsGo\.git", yesterday, untilDate);
         }
 
         private void btnAllView_Click(object sender, RoutedEventArgs e)
@@ -779,6 +785,10 @@ namespace DailyReport
                             MessageBox.Show(ex.Message);
                         }
                     }
+                }
+                else
+                {
+                    MessageBox.Show("Failed to get google sheet preview.");
                 }
             }
             googleSheet.Dispose();
