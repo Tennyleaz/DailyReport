@@ -733,6 +733,8 @@ namespace DailyReport
                 await LoadCommits("WorldCard Express", @"C:\Workspace\WorldCardExpress\.git", yesterday, untilDate);
             if (cbWpsGo.IsChecked == true)
                 await LoadCommits("WPS Go", @"C:\Workspace\WpsGo\.git", yesterday, untilDate);
+            if (cbRemoteGo.IsChecked == true)
+                await LoadCommits("RemoteGo", @"D:\Test Dir\Remote Go\.git", yesterday, untilDate);
         }
 
         private void btnAllView_Click(object sender, RoutedEventArgs e)

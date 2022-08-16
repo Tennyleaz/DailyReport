@@ -36,6 +36,7 @@
             <CheckBox Name="cbWDUSB" Margin="5">Worldictionary USB</CheckBox>
             <CheckBox Name="cbWCExpress" Margin="5">WorldCard Express</CheckBox>
             <CheckBox Name="cbWpsGo" Margin="5">Wps Go</CheckBox>
+            <CheckBox Name="cbRemoteGo" Margin="5">Remote Go</CheckBox>
         </WrapPanel>
 
         <DockPanel Grid.Row="1">
